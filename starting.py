@@ -1,16 +1,26 @@
 import subprocess
+import streamlit as st
 
-def run_npm_start():
-    try:
-        # Run 'npm run start' command
-        result = subprocess.run(['npm', 'run', 'start'], check=True, text=True, capture_output=True)
-        print("Output:\n", result.stdout)
-        print("Errors:\n", result.stderr)
-    except subprocess.CalledProcessError as e:
-        print(f"An error occurred while running 'npm run start': {e}")
-        print("Error Output:\n", e.stderr)
-    except FileNotFoundError:
-        print("npm is not installed or not found in the system PATH.")
+def run_command(command, cwd=None):
+    """Helper function to run a shell command and return its output."""
+    process = subprocess.Popen(command, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    return process.returncode, stdout.decode(), stderr.decode()
 
-if __name__ == "__main__":
-    run_npm_start()
+def setup_and_run_interstellar():
+    # Run 'npm install' to install dependencies
+    returncode, stdout, stderr = run_command(['npm', 'install'], cwd='.')
+    if returncode != 0:
+        st.error(f'Error during npm install: {stderr}')
+        return
+    st.success('Dependencies installed successfully.')
+
+    # Run 'npm run start' to launch the Interstellar proxy
+    returncode, stdout, stderr = run_command(['npm', 'run', 'start'], cwd='.')
+    if returncode == 0:
+        st.success('Interstellar is running!')
+    else:
+        st.error(f'Error starting Interstellar: {stderr}')
+
+if st.button('Setup and Start Interstellar'):
+    setup_and_run_interstellar()
