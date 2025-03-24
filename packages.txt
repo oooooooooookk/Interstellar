@@ -1,0 +1,12 @@
+nodejs
+cors
+chalk
+cookie-parser
+dotenv
+express
+express-basic-auth
+mime
+node-fetch
+npm
+@biomejs/biome
+@nebula-services/bare-server-node
